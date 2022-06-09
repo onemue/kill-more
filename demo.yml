@@ -10,6 +10,10 @@ rules:
       rules: 
         .hide-article-box.hide-article-pos.text-center: display:none|height:auto
         .article_content.clearfix#article_content: height:auto
+    - url: ^.*//.*.blog.csdn.net/article/details/[0-9]*.*$
+      rules: 
+        .hide-article-box.hide-article-pos.text-center: display:none|height:auto
+        .article_content.clearfix#article_content: height:auto
     - url: ^.*\/\/www\.it1352\.com.*\.html$
       rules: 
         div.arc-body-main-more: display:none!important

@@ -25,7 +25,7 @@
       </div>
     </header>
     <main>
-      <div class="panel-container">
+      <div class="panel-container" v-if="killNumberList.length!==0">
         <div class="panel-header">拦截次数</div>
         <div class="panel kill-number">
           <div

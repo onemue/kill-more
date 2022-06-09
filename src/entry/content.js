@@ -89,7 +89,7 @@ function statistics(url) {
                 killMoreStatistical: killMoreStatistical.killMoreStatistical + 1,
                 // 站点列表
                 killMoreStatisticalMap: {
-                    [url.split('/')[2]]: killMoreStatistical.killMoreStatisticalMap[url.split('/')[2]] + 1
+                    [url.split('/')[2]]: (killMoreStatistical.killMoreStatisticalMap[url.split('/')[2]]||0) + 1
                 }
             })
             Utils.consoleLog(newKillMoreStatistical);

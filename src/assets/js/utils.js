@@ -3,8 +3,7 @@ export default class Utils {
     static consoleLog(...args) {
         chrome.storage.sync.get('generallySetup', (res)=>{
             const generallyForm = JSON.parse(res.generallySetup||'[]');
-            
-            if (window.console && window.console.log) {
+            if (generallyForm.Debug&&window.console && window.console.log) {
                 window.console.log('[KillMore]:',...args);
             }
           });

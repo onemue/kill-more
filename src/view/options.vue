@@ -16,9 +16,9 @@
             <el-switch v-model="generallyForm.Debug"></el-switch>
           </el-form-item>
 
-          <el-form-item label="过滤路径">
+          <!-- <el-form-item label="过滤路径">
             <el-input v-model="generallyForm.rulePath"></el-input>
-          </el-form-item>
+          </el-form-item> -->
 
           <el-form-item label="">
             <el-button type="primary" @click="saveGenerally">保存</el-button>
