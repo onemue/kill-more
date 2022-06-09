@@ -26,7 +26,7 @@
     </header>
     <main>
       <div class="panel-container">
-        <div class="panel-header">kill number</div>
+        <div class="panel-header">拦截次数</div>
         <div class="panel kill-number">
           <div
             class="kill-number-item"

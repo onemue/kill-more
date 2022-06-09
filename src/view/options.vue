@@ -20,7 +20,7 @@
             <el-input v-model="generallyForm.rulePath"></el-input>
           </el-form-item>
 
-          <el-form-item label="过滤表名">
+          <el-form-item label="">
             <el-button type="primary" @click="saveGenerally">保存</el-button>
             <el-button>取消</el-button>
           </el-form-item>
@@ -34,7 +34,7 @@
           prop="value"
           label="白名单">
         </el-table-column>
-        <el-table-column label="" width="200">
+        <el-table-column label="" width="80">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -45,7 +45,58 @@
       </el-table>
       </div>
       <div class="tabs-container advanced" v-if="tabActiveName === 'advanced'">
-        advanced
+      <el-table
+        :data="subscription"
+        style="width: 100%">
+        <el-table-column
+          prop="isEnable"
+          label="状态"
+          width="100">
+          <template slot-scope="scope">
+            <el-switch
+              v-model="scope.row.isEnable"
+              @change="changeSubscription(scope.row.isEnable, scope.row.key)"></el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="名称">
+        </el-table-column>
+        <el-table-column
+          prop="latestUpdateTime"
+          label="最近更新时间">
+          <template slot-scope="scope">
+            {{ new Date(scope.row.latestUpdateTime ) }}
+          </template>
+        </el-table-column>
+        <el-table-column label="" width="80">
+        <template slot="header">
+          <el-button
+            size="mini"
+            type="primary"
+            @click="add">新增</el-button>
+        </template>
+        <template slot-scope="scope">
+          <el-button
+            size="mini"
+            type="danger"
+            @click="deleteWhitelist(scope.row.value)">删除</el-button>
+        </template>
+      </el-table-column>
+      </el-table>
+
+      <el-dialog title="新增订阅" :visible.sync="dialogFormVisible">
+        <el-form :model="addSubscriptionForm">
+          <el-form-item label="订阅地址">
+            <el-input v-model="addSubscriptionForm.url" autocomplete="off"></el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">取 消</el-button>
+          <el-button type="primary" @click="addSubscription">确 定</el-button>
+        </div>
+      </el-dialog>
+
       </div>
       <div class="tabs-container about" v-if="tabActiveName === 'about'">
         about
@@ -55,6 +106,8 @@
 </template>
 
 <script>
+import yaml from 'js-yaml';
+
 export default {
   name: "optionsView",
   data() {
@@ -83,17 +136,21 @@ export default {
         rulePath: "",
       },
       whitelist: [],
+      subscription: [],
+      addSubscriptionForm: {},
+      dialogFormVisible: false
     };
   },
   mounted() {
     this.getGenerally();
     this.getWhitelist();
+    this.getSubscriptionList();
   },
   methods: {
     getGenerally() {
       chrome.storage.sync.get('generallySetup', (res)=>{
         console.log(res);
-        this.generallyForm = JSON.parse(res.generallySetup);
+        this.generallyForm = JSON.parse(res.generallySetup||'[]');
       });
     },
     saveGenerally() {
@@ -117,6 +174,40 @@ export default {
         chrome.storage.sync.set({'killMoreWhitelist': JSON.stringify(newWhitelist)});
         _this.whitelist = newWhitelist;
       });
+    },
+    // 获取订阅列表
+    getSubscriptionList() {
+      let _this = this;
+      chrome.storage.sync.get('killMoreSubscriptionList', (res) => {
+        _this.subscription = JSON.parse(res.killMoreSubscriptionList||[]);
+      })
+    },
+    add() {
+      this.dialogFormVisible = true;
+    },
+    addSubscription() {
+      let _this = this;
+      _this.dialogFormVisible = false;
+      fetch(_this.addSubscriptionForm.url)
+      .then(response => response.text().then(
+        (text)=>{
+          // https://pan-onemue.oss-cn-beijing.aliyuncs.com/pan_onemue_cn%2Fuser%2F1%2FBIj96ezr_demo.yml
+          console.log(text);
+          let rules = yaml.load(text);
+
+          console.log(rules);
+          rules.latestUpdateTime = new Date().getTime();
+          rules.isEnable = false;
+          rules.subscriptionUrl = _this.addSubscriptionForm.url;
+
+          chrome.storage.sync.get('killMoreSubscriptionList', (res) => {
+            let subscription = JSON.parse(res.killMoreSubscriptionList||'[]');
+            subscription.push(rules);
+            chrome.storage.sync.set({'killMoreSubscriptionList': JSON.stringify(subscription)});
+            _this.subscription = subscription;
+          })
+        }
+      ))
     }
   },
   computed: {
