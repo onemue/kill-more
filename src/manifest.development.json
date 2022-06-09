@@ -1,0 +1,28 @@
+{
+    "manifest_version": 3,
+    "name": "Kill More",
+    "description": "消灭出现关注公众号等的”阅读更多“",
+    "version": "0.0.1",
+    "background": {
+        "service_worker": "/background.js"
+    },
+    "action": {
+        "default_popup": "popup.html"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "/content.js"
+            ]
+        }
+    ],
+    "permissions": [
+        "tabs",
+        "storage"
+    ],
+    "options_page": "options.html",
+    "devtools_page": "devtools.html"
+}
