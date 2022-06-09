@@ -1,0 +1,20 @@
+# 选择器不可以#出现在首位会识别成注释
+# 如果只存在id可以使用`*#id`或者`标签名#id`
+name: demo
+url: https://pan-onemue.oss-cn-beijing.aliyuncs.com/pan_onemue_cn%2Fuser%2F1%2FBIj96ezr_demo.yml?Expires=1654763598
+author: demo
+version: v 0.0.0
+update-time: 2019-01-01
+rules: 
+    - url: ^.*//blog.csdn.net/.*/article/details/[0-9]*.*$
+      rules: 
+        .hide-article-box.hide-article-pos.text-center: display:none|height:auto
+        .article_content.clearfix#article_content: height:auto
+    - url: ^.*//.*.blog.csdn.net/article/details/[0-9]*.*$
+      rules: 
+        .hide-article-box.hide-article-pos.text-center: display:none|height:auto
+        .article_content.clearfix#article_content: height:auto
+    - url: ^.*\/\/www\.it1352\.com.*\.html$
+      rules: 
+        div.arc-body-main-more: display:none!important
+        div.arc-body-main: height:auto
