@@ -6,11 +6,22 @@ Utils.consoleLog('hello world content todo something~');
 // console.log(document.querySelectorAll('.hide-article-box.hide-article-pos.text-center'));
 
 // 获取订阅列表
-chrome.storage.sync.get('killMoreSubscriptionList', (res) => {
+chrome.storage.sync.get(['killMoreSubscriptionList', 'killMoreWhitelist'], (res) => {
+    const url = window.location.href;
     let rules = [];
 
     if (res.killMoreSubscriptionList){
         let subscription = JSON.parse(res.killMoreSubscriptionList||[]);
+        let whitelist = JSON.parse(res.killMoreWhitelist||[]);
+        Utils.consoleLog(res);
+        Utils.consoleLog(whitelist.findIndex(item => {
+            return (new RegExp(item, 'i')).test(url);
+        }));
+        if (whitelist.findIndex((item =>new RegExp(item, 'i').test(url))) !== -1) {
+            Utils.consoleLog('whitelist');
+            return false;
+        }
+
         subscription.forEach(item => {
             Utils.consoleLog(item);
             rules = rules.concat(item.rules);
