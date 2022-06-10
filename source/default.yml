@@ -1,9 +1,8 @@
 # 选择器不可以#出现在首位会识别成注释
 # 如果只存在id可以使用`*#id`或者`标签名#id`
-# 使用!important会导致css失效
-name: demo
+name: default
 url: https://pan-onemue.oss-cn-beijing.aliyuncs.com/pan_onemue_cn%2Fuser%2F1%2FBIj96ezr_demo.yml?Expires=1654763598
-author: demo
+author: onemue
 version: v 0.0.0
 update-time: 2019-01-01
 rules: 
@@ -19,3 +18,10 @@ rules:
       rules: 
         div.arc-body-main-more: display:none
         div.arc-body-main: height:auto
+    - url: ^.*\/\/www\.shouhuola\.com.*\.html$
+      rules:
+        div.show-content.shortquestioncontent: display:none
+        div.show-content.hidequestioncontent: display:block
+    - url: ^.*\/\/www\.360doc\.com.*\$
+      rules:
+        body.articleMaxH: ~.articleMaxH
