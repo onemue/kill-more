@@ -23,6 +23,9 @@
         "tabs",
         "storage"
     ],
+    "icons": {
+        "400": "img/logo.png"
+    },
     "options_page": "options.html",
     "devtools_page": "devtools.html"
 }
