@@ -22,6 +22,6 @@ rules:
       rules:
         div.show-content.shortquestioncontent: display:none
         div.show-content.hidequestioncontent: display:block
-    - url: ^.*\/\/www\.360doc\.com.*\$
+    - url: ^.*\/\/www\.360doc\.com.*$
       rules:
         body.articleMaxH: ~.articleMaxH
