@@ -10,6 +10,6 @@ author: onemue
 version: v 0.0.0
 update-time: 2019-01-01
 rules: 
-    - url: ^.*\/\/juejin\.com.*$
+    - url: ^.*[juejin\.cn].*$
       rules:
         body: ~
