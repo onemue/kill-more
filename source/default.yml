@@ -1,3 +1,4 @@
+# coding=utf-8
 # 选择器不可以#出现在首位会识别成注释
 # 如果只存在id可以使用`*#id`或者`标签名#id`
 name: default
