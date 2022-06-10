@@ -3,7 +3,7 @@ import Utils from '../assets/js/utils';
 
 Utils.consoleLog('hello world content todo something~');
 
-// console.log(document.querySelectorAll('.hide-article-box.hide-article-pos.text-center'));
+// Utils.consoleLog(document.querySelectorAll('.hide-article-box.hide-article-pos.text-center'));
 
 // 获取订阅列表
 chrome.storage.sync.get(['killMoreSubscriptionList', 'killMoreWhitelist'], (res) => {
@@ -11,9 +11,8 @@ chrome.storage.sync.get(['killMoreSubscriptionList', 'killMoreWhitelist'], (res)
     let rules = [];
 
     if (res.killMoreSubscriptionList){
-        let subscription = JSON.parse(res.killMoreSubscriptionList||[]);
-        let whitelist = JSON.parse(res.killMoreWhitelist||[]);
-        Utils.consoleLog(res);
+        let subscription = JSON.parse(res.killMoreSubscriptionList||'[]');
+        let whitelist = JSON.parse(res.killMoreWhitelist||'[]');
         Utils.consoleLog(whitelist.findIndex(item => {
             return (new RegExp(item, 'i')).test(url);
         }));
@@ -24,8 +23,11 @@ chrome.storage.sync.get(['killMoreSubscriptionList', 'killMoreWhitelist'], (res)
 
         subscription.forEach(item => {
             Utils.consoleLog(item);
-            rules = rules.concat(item.rules);
+            if(item.isEnable){
+                rules = rules.concat(item.rules);
+            }
         })
+        Utils.consoleLog(rules);
     }
 
     process(rules);
@@ -59,15 +61,49 @@ function process(rules) {
         Utils.consoleLog(document);
         Object.keys(rule.rules).forEach(item => {
             Utils.consoleLog(item);
-            Utils.consoleLog(item.selector);
             document.querySelectorAll(item).forEach(element => {
                 Utils.consoleLog(element);
+                Utils.consoleLog(rule.rules[item]);
+
                 const styleArray = rule.rules[item].split('|');
                 // TODO 可以优化
                 styleArray.forEach(style => {
+                    // 如果 style 第一位为~ 则表示移除 ~. 移除class ~# 移除id ~ 表示移除元素
+                    if (style.startsWith('~')) {
+                        if (style.startsWith('~.')) {
+                            element.classList.remove(style.substring(2));
+                            return;
+                        } else if (style.startsWith('~#')) {
+                            element.id = '';
+                            return;
+                        } else {
+                            element.remove();
+                            return;
+                        }
+                    }
+                    // 如果 style 第一位为. 则表示添加class # 添加id
+                    else if (style.startsWith('.')) {
+                        element.classList.add(style.substring(1));
+
+                    }
+                    else if (style.startsWith('#')) {
+                        element.id = style.substring(1);
+                    }
+                    // 如果第一位为 $ 则表示执行()内js 参数为element
+                    else if ((/^\$\(.+?\)$/g).test(style)) {
+                        // 获取$()内的内容
+                        const js = style.substring(1, style.length - 1);
+                        try {
+                            new Function('element', js)(element);
+                        } catch (error) {
+                            Utils.consoleLog(js);
+                        }
+                    }
                     const styleArray = style.split(':');
+                    Utils.consoleLog(styleArray);
                     element.style[styleArray[0]] = styleArray[1];
                 });
+
             });
         });
         statistics(url);

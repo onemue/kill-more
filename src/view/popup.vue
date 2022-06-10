@@ -51,6 +51,8 @@
 </template>
 
 <script>
+import Utils from '../assets/js/utils';
+
 export default {
   name: "popupView",
   data() {
@@ -67,7 +69,7 @@ export default {
     let _this = this;
 
     chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
-      console.log(tabs);
+      Utils.consoleLog(tabs);
       _this.url = tabs[0].url;
       _this.getStatistics();
       _this.getWhitelist();
@@ -84,7 +86,7 @@ export default {
       let _this = this;
       chrome.storage.sync.get("killMoreStatistical", (res) => {
         _this.statistical = JSON.parse(res.killMoreStatistical);
-        console.log(_this.statistical, res.killMoreStatistical);
+        Utils.consoleLog(_this.statistical, res.killMoreStatistical);
         
       });
     },
@@ -93,10 +95,10 @@ export default {
       chrome.storage.sync.get("killMoreWhitelist", (res) => {
 
         let whitelist = JSON.parse(res.killMoreWhitelist||'[]');
-        console.log(whitelist)
+        Utils.consoleLog(whitelist)
         
         whitelist.forEach(element => {
-          console.log(element, `^.*${_this.url}.*$`, `^.*${_this.url}/${_this.relativeUrl}.*$`);
+          Utils.consoleLog(element, `^.*${_this.url}.*$`, `^.*${_this.url}/${_this.relativeUrl}.*$`);
           if(new RegExp(element).test(_this.url)){
             _this.isKillsRelative = false;
           }
@@ -111,7 +113,7 @@ export default {
       let _this = this;
       _this.isRefresh = true;
       chrome.storage.sync.get("killMoreWhitelist", (res) => {
-        console.log(res)
+        Utils.consoleLog(res)
         let whitelist = JSON.parse(res.killMoreWhitelist||'[]');
         if (!_this.isKillsMain && type==="main"||!_this.isKillsRelative && type==="relative") {
           whitelist.push(rule);
@@ -120,7 +122,7 @@ export default {
         }
 
         chrome.storage.sync.set({ killMoreWhitelist: JSON.stringify(whitelist) }, () => {
-          console.log("set whitelist success");
+          Utils.consoleLog("set whitelist success");
         });
       });
     },

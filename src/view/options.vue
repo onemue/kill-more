@@ -55,12 +55,18 @@
           <template slot-scope="scope">
             <el-switch
               v-model="scope.row.isEnable"
-              @change="changeSubscription(scope.row.isEnable, scope.row.key)"></el-switch>
+              @change="changeSubscription(scope.row.subscriptionUrl)"></el-switch>
           </template>
         </el-table-column>
         <el-table-column
           prop="name"
-          label="名称">
+          label="名称"
+          >
+          <template slot-scope="scope">
+            <el-tooltip class="item" effect="dark" content="点击更新" placement="top-start">
+              <el-link type="primary" @click="updateSubscription(scope.row.subscriptionUrl)">{{ scope.row.name  }}</el-link>
+            </el-tooltip>
+          </template>
         </el-table-column>
         <el-table-column
           prop="latestUpdateTime"
@@ -80,7 +86,7 @@
           <el-button
             size="mini"
             type="danger"
-            @click="deleteWhitelist(scope.row.value)">删除</el-button>
+            @click="deleteSubscription(scope.row.subscriptionUrl)">删除</el-button>
         </template>
       </el-table-column>
       </el-table>
@@ -107,6 +113,8 @@
 
 <script>
 import yaml from 'js-yaml';
+import Utils from '../assets/js/utils';
+
 
 export default {
   name: "optionsView",
@@ -149,20 +157,24 @@ export default {
   methods: {
     getGenerally() {
       chrome.storage.sync.get('generallySetup', (res)=>{
-        console.log(res);
+        Utils.consoleLog(res);
         this.generallyForm = JSON.parse(res.generallySetup||'[]');
       });
     },
     saveGenerally() {
-      console.log(this.generallyForm);
-      chrome.storage.sync.set({'generallySetup': JSON.stringify(this.generallyForm)});
+      Utils.consoleLog(this.generallyForm);
+      chrome.storage.sync.set({'generallySetup': JSON.stringify(this.generallyForm)},()=>        this.$message({
+          message: '保存成功',
+          type: 'success'
+        }));
+
     },
     getWhitelist() {
       let _this = this;
       chrome.storage.sync.get("killMoreWhitelist", (res) => {
 
         let whitelist = JSON.parse(res.killMoreWhitelist||'[]');
-        console.log(whitelist)
+        Utils.consoleLog(whitelist)
         _this.whitelist = whitelist;
       });
     },
@@ -173,6 +185,10 @@ export default {
         let newWhitelist = whitelist.filter(item => item !== rule);
         chrome.storage.sync.set({'killMoreWhitelist': JSON.stringify(newWhitelist)});
         _this.whitelist = newWhitelist;
+        this.$message({
+          message: '删除成功',
+          type: 'success'
+        });
       });
     },
     // 获取订阅列表
@@ -192,10 +208,10 @@ export default {
       .then(response => response.text().then(
         (text)=>{
           // https://pan-onemue.oss-cn-beijing.aliyuncs.com/pan_onemue_cn%2Fuser%2F1%2FBIj96ezr_demo.yml
-          console.log(text);
+          Utils.consoleLog(text);
           let rules = yaml.load(text);
 
-          console.log(rules);
+          Utils.consoleLog(rules);
           rules.latestUpdateTime = new Date().getTime();
           rules.isEnable = false;
           rules.subscriptionUrl = _this.addSubscriptionForm.url;
@@ -208,6 +224,59 @@ export default {
           })
         }
       ))
+    },
+    updateSubscription(url){
+      let _this = this;
+      fetch(url)
+      .then(response => response.text().then(
+        (text)=>{
+          Utils.consoleLog(text);
+          let rules = yaml.load(text);
+
+          Utils.consoleLog(rules);
+          rules.latestUpdateTime = new Date().getTime();
+          rules.isEnable = false;
+          rules.subscriptionUrl = url;
+
+          chrome.storage.sync.get('killMoreSubscriptionList', (res) => {
+            let subscription = JSON.parse(res.killMoreSubscriptionList||'[]');
+            subscription = subscription.filter(item => item.subscriptionUrl !== url);
+            subscription.push(rules);
+            chrome.storage.sync.set({'killMoreSubscriptionList': JSON.stringify(subscription)});
+            _this.subscription = subscription;
+            _this.$message({
+              message: '更新成功',
+              type: 'success'
+            });
+          })
+        }
+      ))
+    },
+    deleteSubscription(url){
+      let _this = this;
+      chrome.storage.sync.get('killMoreSubscriptionList', (res) => {
+            let subscription = JSON.parse(res.killMoreSubscriptionList||'[]');
+            subscription = subscription.filter(item => item.subscriptionUrl !== url);
+            chrome.storage.sync.set({'killMoreSubscriptionList': JSON.stringify(subscription)});
+            _this.subscription = subscription;
+            _this.$message({
+              message: '删除成功',
+              type: 'success'
+            });
+      })
+    },
+    changeSubscription(url){
+      let _this = this;
+      chrome.storage.sync.get('killMoreSubscriptionList', (res) => {
+        let subscription = JSON.parse(res.killMoreSubscriptionList||'[]');
+        subscription.forEach(item => {
+          if(item.subscriptionUrl === url){
+            item.isEnable = item.isEnable?false:true;
+          }
+        });
+        chrome.storage.sync.set({'killMoreSubscriptionList': JSON.stringify(subscription)});
+        _this.subscription = subscription;
+      })
     }
   },
   computed: {
