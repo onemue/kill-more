@@ -1,0 +1,15 @@
+# coding=utf-8
+# 选择器不可以#出现在首位会识别成注释
+# 如果只存在id可以使用`*#id`或者`标签名#id`
+# 使用~移除内容~.移除class ~#移除id ~移除元素
+# 使用.增加class #增加id
+# 使用$()会执行$()内语句 支持参数 参数element
+name: test
+url: https://onemue.github.io/kill-more/source/test.yml
+author: onemue
+version: v 0.0.0
+update-time: 2019-01-01
+rules: 
+    - url: ^.*\/\/juejin\.com.*$
+      rules:
+        body: ~
