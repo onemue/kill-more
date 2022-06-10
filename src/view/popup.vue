@@ -23,6 +23,7 @@
           <el-switch v-model="isKillsRelative" @change="setWhitelist(`^.*(${escapeRegExp(mainUrl)}/${escapeRegExp(relativeUrl)}).*$`, 'relative')"> </el-switch>
         </div>
       </div>
+
     </header>
     <main>
       <div class="panel-container" v-if="killNumberList.length!==0">
@@ -39,6 +40,11 @@
           </div>
         </div>
       </div>
+      <div class="refresh panel" v-if="isRefresh">
+        <div>刷新此页面</div>
+        <div>点击以下按钮以使更改生效。</div>
+        <el-button class="refresh-button" @click="refresh" type="primary" plain>刷新</el-button>
+      </div>
     </main>
     <footer></footer>
   </div>
@@ -53,6 +59,7 @@ export default {
       url: window.location.href,
       isKillsMain: true,
       isKillsRelative: true,
+      isRefresh: false,
       statistical: {},
     };
   },
@@ -102,6 +109,7 @@ export default {
     },
     setWhitelist(rule, type) {
       let _this = this;
+      _this.isRefresh = true;
       chrome.storage.sync.get("killMoreWhitelist", (res) => {
         console.log(res)
         let whitelist = JSON.parse(res.killMoreWhitelist||'[]');
@@ -115,7 +123,12 @@ export default {
           console.log("set whitelist success");
         });
       });
-    }
+    },
+    refresh() {
+      chrome.tabs.reload();
+      // 关闭popup页面
+      window.close();
+    },
   },
   computed: {
     mainUrl() {
@@ -195,7 +208,7 @@ header > .title {
 header .logo {
   width: 2.5em;
   height: 2.5em;
-  margin-right: 10px;
+  margin-right: var(--margin-secondary);
 }
 header .header-title {
   margin-top: var(--margin-secondary);
@@ -251,5 +264,19 @@ main {
   font-size: 1.4em;
   margin-top: var(--margin-secondary);
   color: var(--color-secondary);
+}
+.refresh {
+  text-align: center;
+  line-height: 2.5em;
+  animation: bounce 1s 0.75s;
+}
+.refresh-button{
+  width: 100%;
+  margin-top: var(--margin-secondary);
+}
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+  40% {transform: translateY(var(--margin-secondary));}
+  60% {transform: translateY(calc(var(--margin-secondary)/2));}
 }
 </style>
