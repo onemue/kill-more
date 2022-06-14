@@ -43,6 +43,14 @@
           </div>
         </div>
       </div>
+      <div class="url-qrcode" v-if="!isRefresh">
+        <vue-qr 
+          class="qrcode"
+          ref="Qrcode" 
+          :text="url" 
+          qid="testQrId"
+        />
+      </div>
       <div class="refresh panel" v-if="isRefresh">
         <div>刷新此页面</div>
         <div>点击以下按钮以使更改生效。</div>
@@ -55,9 +63,11 @@
 
 <script>
 import Utils from '../assets/js/utils';
+import VueQr from 'vue-qr';
 
 export default {
   name: "popupView",
+  components: { VueQr },
   data() {
     return {
       msg: "popup",
@@ -299,6 +309,17 @@ main {
   text-align: center;
   line-height: 2.5em;
   animation: bounce 1s 0.75s;
+}
+.url-qrcode{
+  width: 100%;
+  margin-top: var(--margin-secondary);
+  border-radius: var(--border-radius-primary);
+  background-color: var(--background-color-primary);
+  box-shadow: var(--box-shadow-primary);
+}
+.qrcode{
+  display: block !important;
+  margin: 0 auto;  
 }
 .refresh-button{
   width: 100%;
