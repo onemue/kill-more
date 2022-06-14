@@ -7,7 +7,7 @@ author: onemue
 version: v 0.0.0
 update-time: 2019-01-01
 rules: 
-    - url: ^.*//blog.csdn.net/*$
+    - url: ^.*[blog\.csdn\.net].*$
       rules:
         .toolbar-advert: display:none
     - url: ^.*//blog.csdn.net/.*/article/details/[0-9]*.*$
