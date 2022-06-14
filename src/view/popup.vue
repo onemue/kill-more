@@ -4,6 +4,9 @@
       <div class="title">
         <img class="logo" src="../assets/logo.png" alt="logo" />
         <h1>Kill More</h1>
+        <div class="popup-setup-button" @click="gotoSetUp()">
+          <i class="el-icon-s-tools"></i>
+        </div>
       </div>
       <!-- <div class="header-title">消灭更多</div> -->
       <div class="popup-setup" v-if="isWebsite">
@@ -131,6 +134,9 @@ export default {
       // 关闭popup页面
       window.close();
     },
+    gotoSetUp() {
+      chrome.tabs.create({ url: "options.html" });
+    },
   },
   computed: {
     mainUrl() {
@@ -207,6 +213,28 @@ header > .title {
   display: flex;
   line-height: 2.5em;
 }
+
+header > .title > h1 {
+  flex: 1;
+}
+
+header > .title > .popup-setup-button {
+  font-size: var(--font-size-big);
+  color: var(--color-dimmed);
+  transition: all 0.3s ease-in-out;
+}
+header > .title > .popup-setup-button:hover {
+  color: var(--color-secondary);
+}
+
+header > .title > .popup-setup-button:hover i {
+  color: var(--color-secondary);
+  animation: rotate 0.75s ease-in-out forwards;
+}
+header > .title > .popup-setup-button:hover i::before {
+  content: "";
+}
+
 header .logo {
   width: 2.5em;
   height: 2.5em;
@@ -280,5 +308,13 @@ main {
   0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
   40% {transform: translateY(var(--margin-secondary));}
   60% {transform: translateY(calc(var(--margin-secondary)/2));}
+}
+/* 旋转动画 */
+@keyframes rotate {
+  from {transform: rotate(0deg);}
+  to {
+    transform: rotate(360deg);
+    color: var(--color-link);
+    }
 }
 </style>

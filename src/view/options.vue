@@ -240,7 +240,12 @@ export default {
 
           chrome.storage.sync.get('killMoreSubscriptionList', (res) => {
             let subscription = JSON.parse(res.killMoreSubscriptionList||'[]');
-            subscription = subscription.filter(item => item.subscriptionUrl !== url);
+            subscription = subscription.filter(item => {
+              if(item.subscriptionUrl === url){
+                rules.isEnable = item.isEnable;
+              }
+              return item.subscriptionUrl !== url;
+            });
             subscription.push(rules);
             chrome.storage.sync.set({'killMoreSubscriptionList': JSON.stringify(subscription)});
             _this.subscription = subscription;
