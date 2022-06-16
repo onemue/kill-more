@@ -29,3 +29,6 @@ rules:
     - url: ^.*\/\/www\.360doc\.com.*$
       rules:
         body.articleMaxH: ~.articleMaxH
+    - url: ^.*/\/\ruanyifeng\.com.*$
+      rules:
+        [style="display:inline-block ! important;width:100%;"]: display:none
